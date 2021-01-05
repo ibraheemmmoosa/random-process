@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.random import default_rng
 
+rng = default_rng()
 # p is probability of rise
 m = 100
 p = 0.5
@@ -8,18 +10,8 @@ r = np.array([1.0 + 1.1e-3, 1.0 - 1e-3])
 n = 100000
 
 def func(p, r, n):
-    P = np.random.rand(n)
-    P = (P < p).astype(int)
-    D = 2 * P - 1
-
-    zz = np.sum(np.convolve(D, [-1, -1], mode='valid') == 2)
-    oz = np.sum(np.convolve(D, [1, -1], mode='valid') == 2)
-    zo = np.sum(np.convolve(D, [-1, 1], mode='valid') == 2)
-    oo = np.sum(np.convolve(D, [1, 1], mode='valid') == 2)
-    tot = zz + oz + zo + oo
-
-    pos = np.cumprod(r[P])
-
+    P = rng.choice(r, size=n, p=[p, 1 - p], replace=True)
+    pos = np.cumprod(P)
     return pos
 
 poses = [func(p, r, n) for i in range(m)]
