@@ -17,8 +17,10 @@ def func(p, r, n):
 poses = [func(p, r, n) for i in range(m)]
 pos = sum(poses) / m
 
+subsample_every = 100
+x = list(range(0, n, subsample_every))
 for i in range(m):
-    plt.plot(poses[i])
+    plt.plot(x, poses[i][::subsample_every])
 
-plt.plot(pos, linewidth=2.0, c='black')
+plt.plot(x, pos[::subsample_every], linewidth=2.0, c='black')
 plt.show()
