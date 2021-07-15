@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-def simulate_brownian_motion(key, num_particles, num_steps, max_spread_start_position):
-    mean = jnp.tile(jnp.array([0.0, 0.0]), (num_particles, 1))
-    cov = jnp.tile(jnp.array([[1.0, 0.0], [0.0, 1.0]]), (num_particles, 1, 1))
+def simulate_brownian_motion(key, num_particles, num_steps, max_spread_start_position, drift=[0.0, 0.0], var=1.0):
+    mean = jnp.tile(jnp.array(drift), (num_particles, 1))
+    cov = jnp.tile(jnp.array([[var, 0.0], [0.0, var]]), (num_particles, 1, 1))
 
     random_steps = multivariate_normal(key, mean, cov, shape=(num_steps, num_particles))
     cumulative_steps = jnp.cumsum(random_steps, axis=0) 
@@ -36,15 +36,16 @@ def visualize_brownian_motion(key, positions, wall_position, animation_interval,
 
 
 if __name__ == '__main__':
-    num_particles = 100
-    particle_size = 100
-    num_steps = 10000
-    max_spread_start_position = 10.0
-    wall_position = 100.0
-    animation_interval = 10
+    num_particles = 1000
+    num_steps = 10000 # Number of simulation steps
+    max_spread_start_position = 10.0 # Start position is bounded in both axis to -10, 10
+    drift = [0.01, 0.0] # A slight drift of 0.01 to the right
+    wall_position = 100.0 # Limit plot in both axis to -100, 100
+    animation_interval = 10 # In milliseconds
+    particle_size = 10 # Particle visualization size
 
     key = jax.random.PRNGKey(0)
 
-    positions = simulate_brownian_motion(key, num_particles, num_steps, max_spread_start_position)
+    positions = simulate_brownian_motion(key, num_particles, num_steps, max_spread_start_position, drift)
     particle_colors = positions[0, :, 0]
     visualize_brownian_motion(key, positions, wall_position, animation_interval, particle_colors)
